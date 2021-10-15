@@ -72,7 +72,7 @@ internal extension MessagesViewController {
             return
         }
 
-        guard self.presentedViewController == nil else {
+        guard self.presentedViewController == nil || self.presentedViewController is UISearchController else {
             // This is important to skip notifications from child modal controllers in iOS >= 13.0
             return
         }
@@ -98,10 +98,6 @@ internal extension MessagesViewController {
         let newBottomInset = requiredScrollViewBottomInset(forKeyboardFrame: keyboardEndFrame)
         let differenceOfBottomInset = newBottomInset - messageCollectionViewBottomInset
 
-        UIView.performWithoutAnimation {
-            messageCollectionViewBottomInset = newBottomInset
-        }
-        
         if maintainPositionOnKeyboardFrameChanged && differenceOfBottomInset != 0 {
             let contentOffset = CGPoint(x: messagesCollectionView.contentOffset.x, y: messagesCollectionView.contentOffset.y + differenceOfBottomInset)
             // Changing contentOffset to bigger number than the contentSize will result in a jump of content
@@ -111,6 +107,11 @@ internal extension MessagesViewController {
             }
             messagesCollectionView.setContentOffset(contentOffset, animated: false)
         }
+        
+        UIView.performWithoutAnimation {
+            messageCollectionViewBottomInset = newBottomInset
+        }
+        
     }
 
     // MARK: - Inset Computation
